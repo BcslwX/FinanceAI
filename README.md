@@ -1,4 +1,4 @@
-# FinanceAI — Personal Finance Management System
+# FinanceAI - Personal Finance Management System
 
 Bachelor thesis project by Leonid Petrov.
 A cloud-based personal finance management system with AI-driven
