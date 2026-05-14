@@ -1,7 +1,6 @@
 ﻿using System.Globalization;
-using FinanceAI.Core.Entities;
 
-namespace FinanceAI.API.Services;
+namespace FinanceAI.Analytics.Services;
 
 public class ParsedTransaction
 {

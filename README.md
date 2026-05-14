@@ -48,6 +48,5 @@ financial insights.
     - `FinanceAI.Core/` — services, DTOs, validation
     - `FinanceAI.Infrastructure/` — EF Core, repositories
     - `FinanceAI.Analytics/` — predictions, OpenAI integration, anomaly detection
-    - `FinanceAI.API/` — controllers, JWT auth, serves the built frontend
 - `Frontend/` — React 18 application
 - `Frontend/dist/` is built and copied to `Backend/FinanceAI.API/wwwroot/`

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using FinanceAI.API.DTOs;
 using FinanceAI.Core.Entities;
 using FinanceAI.Core.Interfaces;
-using FinanceAI.ML.Services;
+using FinanceAI.Analytics.Services;
 using System.Security.Claims;
 
 namespace FinanceAI.API.Controllers;

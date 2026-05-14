@@ -1,7 +1,7 @@
 ﻿using FinanceAI.Core.Entities;
 using FinanceAI.Core.Interfaces;
 
-namespace FinanceAI.ML.Services;
+namespace FinanceAI.Analytics.Services;
 
 public class AnomalyDetectionService
 {

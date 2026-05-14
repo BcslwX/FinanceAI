@@ -4,7 +4,7 @@ using FinanceAI.API.Services;
 using FinanceAI.Core.Entities;
 using FinanceAI.Infrastructure.Data;
 using System.Security.Claims;
-using FinanceAI.ML.Services;
+using FinanceAI.Analytics.Services;
 
 namespace FinanceAI.API.Controllers;
 

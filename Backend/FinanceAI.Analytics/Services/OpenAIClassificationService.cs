@@ -2,7 +2,7 @@
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 
-namespace FinanceAI.API.Services;
+namespace FinanceAI.Analytics.Services;
 
 public class ClassificationResult
 {

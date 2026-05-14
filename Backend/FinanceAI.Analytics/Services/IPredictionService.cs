@@ -1,5 +1,5 @@
 ﻿
-namespace FinanceAI.ML.Services;
+namespace FinanceAI.Analytics.Services;
 
 public interface IPredictionService
 {

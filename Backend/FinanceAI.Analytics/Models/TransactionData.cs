@@ -1,7 +1,7 @@
 ﻿
 using Microsoft.ML.Data;
 
-namespace FinanceAI.ML.Models;
+namespace FinanceAI.Analytics.Models;
 
 public class TransactionData
 {

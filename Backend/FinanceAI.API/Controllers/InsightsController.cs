@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FinanceAI.API.Services;
-using FinanceAI.ML.Services;
+using FinanceAI.Analytics.Services;
 using System.Security.Claims;
 
 namespace FinanceAI.API.Controllers;

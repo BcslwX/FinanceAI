@@ -8,7 +8,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\FinanceAI.Infrastructure\FinanceAI.Infrastructure.csproj" />
-		<ProjectReference Include="..\FinanceAI.ML\FinanceAI.ML.csproj" />
+		<ProjectReference Include="..\FinanceAI.Analytics\FinanceAI.Analytics.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

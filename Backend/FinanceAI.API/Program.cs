@@ -2,7 +2,7 @@ using FinanceAI.API.Services;
 using FinanceAI.Core.Interfaces;
 using FinanceAI.Infrastructure.Data;
 using FinanceAI.Infrastructure.Repositories;
-using FinanceAI.ML.Services;
+using FinanceAI.Analytics.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
