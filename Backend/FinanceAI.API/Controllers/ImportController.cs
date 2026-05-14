@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using FinanceAI.API.Services;
 using FinanceAI.Core.Entities;
 using FinanceAI.Infrastructure.Data;
@@ -17,39 +18,69 @@ public class ImportController : ControllerBase
     private readonly OpenAIClassificationService _ai;
     private readonly FinanceAIDbContext _db;
     private readonly AnomalyDetectionService _anomaly;
+    private readonly ILogger<ImportController> _logger;
 
-    public ImportController(CsvImportService csv, OpenAIClassificationService ai, FinanceAIDbContext db, AnomalyDetectionService anomaly)
+    public ImportController(
+        CsvImportService csv,
+        OpenAIClassificationService ai,
+        FinanceAIDbContext db,
+        AnomalyDetectionService anomaly,
+        ILogger<ImportController> logger)
     {
         _csv = csv;
         _ai = ai;
         _db = db;
         _anomaly = anomaly;
+        _logger = logger;
     }
 
     [HttpPost("csv")]
     public async Task<IActionResult> ImportCsv(IFormFile file)
     {
         if (file == null || file.Length == 0)
-            return BadRequest("No file uploaded");
+            return BadRequest(new { message = "No file uploaded" });
 
         var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
         // 1. Parse CSV
-        using var stream = file.OpenReadStream();
-        var parsed = _csv.ParseSebCsv(stream);
+        List<ParsedTransaction> parsed;
+        try
+        {
+            using var stream = file.OpenReadStream();
+            parsed = _csv.ParseSebCsv(stream);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "CSV parsing failed for user {UserId}", userId);
+            return BadRequest(new { message = "The uploaded file could not be parsed. Please ensure it is a valid SEB bank CSV export." });
+        }
 
         if (parsed.Count == 0)
-            return BadRequest("No transactions found in file");
+            return BadRequest(new { message = "No transactions found in file" });
 
-        // 2. Classify with OpenAI in batches of 50
+        // 2. Classify with OpenAI in batches of 50 
         var allResults = new List<ClassificationResult>();
-        var batchSize = 50;
+        bool aiFailed = false;
+        const int batchSize = 50;
 
         for (int i = 0; i < parsed.Count; i += batchSize)
         {
             var batch = parsed.Skip(i).Take(batchSize).ToList();
-            var classified = await _ai.ClassifyAsync(batch);
-            allResults.AddRange(classified);
+            try
+            {
+                var classified = await _ai.ClassifyAsync(batch);
+                allResults.AddRange(classified);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "AI classification failed for batch starting at index {Index}. Falling back to default category.", i);
+                aiFailed = true;
+                allResults.AddRange(batch.Select(_ => new ClassificationResult
+                {
+                    Category = "Uncategorized",
+                    Description = string.Empty
+                }));
+            }
         }
 
         // 3. Save to database
@@ -57,7 +88,7 @@ public class ImportController : ControllerBase
         for (int i = 0; i < parsed.Count; i++)
         {
             var p = parsed[i];
-            var c = i < allResults.Count ? allResults[i] : new ClassificationResult();
+            var c = i < allResults.Count ? allResults[i] : new ClassificationResult { Category = "Uncategorized" };
 
             transactions.Add(new Transaction
             {
@@ -65,7 +96,7 @@ public class ImportController : ControllerBase
                 UserId = userId,
                 Amount = p.Amount,
                 Type = p.Type == "C" ? TransactionType.Income : TransactionType.Expense,
-                Category = c.Category,
+                Category = string.IsNullOrWhiteSpace(c.Category) ? "Uncategorized" : c.Category,
                 Description = string.IsNullOrWhiteSpace(c.Description) ? p.Counterparty : c.Description,
                 Merchant = p.Counterparty,
                 TransactionDate = p.Date,
@@ -76,11 +107,16 @@ public class ImportController : ControllerBase
         _db.Transactions.AddRange(transactions);
         await _anomaly.DetectAndMarkAnomalies(userId);
         await _db.SaveChangesAsync();
-        
+
+        var message = aiFailed
+            ? $"Imported {transactions.Count} transactions. AI classification was unavailable; transactions were saved with default category."
+            : $"Successfully imported {transactions.Count} transactions";
+
         return Ok(new
         {
             imported = transactions.Count,
-            message = $"Successfully imported {transactions.Count} transactions"
+            aiAvailable = !aiFailed,
+            message
         });
     }
 }

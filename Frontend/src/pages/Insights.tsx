@@ -51,7 +51,7 @@ export default function Insights() {
             setData(res.data);
             setLoadedPeriod(months);
         } catch {
-            setError('Failed to generate insights. Check your OpenAI API key.');
+            setError('AI Insights are temporarily unavailable. Please try again later.');
         } finally {
             setLoading(false);
         }
