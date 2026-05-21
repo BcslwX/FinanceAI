@@ -48,12 +48,12 @@ financial insights.
 
 ## Project structure
 
-- `Backend/` — ASP.NET Core 8 solution following Clean Architecture
-  - `FinanceAI.Core/` — domain entities, interfaces, and core DTOs
-  - `FinanceAI.Infrastructure/` — EF Core DbContext, migrations, and repository implementations
-  - `FinanceAI.Analytics/` — prediction algorithm, OpenAI integration, anomaly detection
-  - `FinanceAI.API/` — REST controllers, application services, DTOs, JWT authentication, and serves the built frontend from `wwwroot/`
-- `Frontend/` — React 18 + TypeScript + Tailwind CSS application
+- `Backend/` - ASP.NET Core 8 solution following Clean Architecture
+  - `FinanceAI.Core/` - domain entities, interfaces, and core DTOs
+  - `FinanceAI.Infrastructure/` - EF Core DbContext, migrations, and repository implementations
+  - `FinanceAI.Analytics/` - prediction algorithm, OpenAI integration, anomaly detection
+  - `FinanceAI.API/` - REST controllers, application services, DTOs, JWT authentication, and serves the built frontend from `wwwroot/`
+- `Frontend/` - React 18 + TypeScript + Tailwind CSS application
 - `Frontend/dist/` is built and copied to `Backend/FinanceAI.API/wwwroot/` to be served by the backend.
 
 ## Rebuilding the frontend
